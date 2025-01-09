@@ -2,13 +2,19 @@ from dataclasses import dataclass
 from typing import Dict
 from nutrient import Nutrient 
 
+"""
+raw data retrived for nutrients is first based as per
+100g or per 100ml from the branded foods database
+from the USDA
+"""
+
 @dataclass  #(order=True)
 class Product:
     brandName: str
     description: str
     servingSize: float
-    servingSizeUnit: str
-    nutrients: Dict[str, Nutrient] # per 100g
+    servingSizeUnit: str           # g or mL
+    nutrients: Dict[str, Nutrient] # per 100g or 100mL
 
     @property
     def nutrients_per_serving(self):
@@ -24,7 +30,7 @@ class Product:
                 {n: newNutrient}
             )
 
-            return nutrients_per_serving
+        return nutrients_per_serving
 
 
 """
