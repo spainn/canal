@@ -1,5 +1,6 @@
 import requests
 import pprint
+import sys
 from product import Product
 from nutrient import Nutrient
 from canal import Canal
@@ -10,6 +11,7 @@ API_KEY = "DEMO_KEY"
 BARCODE = "021130409433"        
          
 def main(args = [str]):
+    args = sys.argv
     canal = Canal()
 
     if len(args) == 0:
@@ -17,7 +19,10 @@ def main(args = [str]):
         return
     
     # if args[0] is a barcode (12 digit integer that can start with 0)
-    product = canal.get_product(BARCODE)
+    #product = canal.get_product(BARCODE)
+
+    for i in args:
+        print(i)
 
 if __name__ == "__main__":
     main()
