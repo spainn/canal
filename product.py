@@ -8,11 +8,11 @@ raw data retrived for nutrients is first based as per
 from the USDA
 """
 
-@dataclass  #(order=True)
+@dataclass(frozen=True)  #(order=True)
 class Product:
     brandName: str
     description: str
-    servingSize: float
+    servingSize: float             # g or mL amount
     servingSizeUnit: str           # g or mL
     nutrients: Dict[str, Nutrient] # per 100g or 100mL
 

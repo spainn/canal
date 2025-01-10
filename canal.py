@@ -15,8 +15,12 @@ class Canal:
             pprint.pprint(raw_product_data)
         else:
             raise Exception(f"request failed with status code {r.status_code}")
-        
+
+        if raw_product_data['foods'] == []:
+            raise Exception(f"Barcode {barcode} invalid.  Could not find any foods.")
+
         food = raw_product_data['foods'][0]
+
         nutrients = dict()
         for nutrient in food['foodNutrients']:
             n = Nutrient(name = nutrient['nutrientName'].lower(),
@@ -32,4 +36,10 @@ class Canal:
                           nutrients=nutrients)
 
         return product
+
+    def add_grams(self, product: Product, grams: float):
+        None
+
+    def add_servings(self, product: Product, servings: float):
+        self.add_grams(product, servings*product.servingSize)
 

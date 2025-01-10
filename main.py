@@ -18,8 +18,32 @@ def main(args = [str]):
         # print daily macronutrients and calories
         return
     
-    # if args[0] is a barcode (12 digit integer that can start with 0)
+    # if args[1] is a barcode (12 digit integer that can start with 0)
     #product = canal.get_product(BARCODE)
+    
+    if args[1] == "add":
+        if args[2] == "-b":
+            barcode = args[3]
+            product = canal.get_product(barcode)
+
+            if args[4] == "-s":
+                servings = args[5]
+                canal.add_servings(product, float(servings))
+
+            elif args[4] == "-g":
+                grams = args[5]
+                canal.add_grams(product, float(grams))
+
+
+
+        else:
+            mealName = args[2]
+
+            if args[3] == "-s":
+                None
+            elif args[3] == "-g":
+                None
+            # means args[2] is a name rather than a flag
 
     for i in args:
         print(i)
