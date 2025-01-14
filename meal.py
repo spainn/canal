@@ -44,9 +44,11 @@ class Meal:
 
         return nutrients_per_serving
 
-    def get_macros_from_serving(self, servings):
-
     def get_macros_from_grams(self, grams):
+
+    def get_macros_from_servings(self, servings):
+
+    
         
 
 

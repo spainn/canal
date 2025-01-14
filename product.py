@@ -11,12 +11,14 @@ from the USDA
 
 @dataclass(frozen=True)  #(order=True)
 class Product:
+    MACROS = ["energy", "total lipid (fat)", "carbogydrate, by difference", "protein"]
+
     brandName: str
     description: str
     serving_size: float             # g or mL amount
     servingSizeUnit: str           # g or mL
     nutrients: List[Nutrient] # per 100g or 100mL
-
+    
     @property
     def nutrients_per_serving(self):
         """Returns a Dict[str, Nutrient] of each nutrient's
@@ -33,10 +35,14 @@ class Product:
     def get_macros_from_grams(self, grams):
         macros = dict()
         
-        macros.update( {"protein": self.nutrients["protein"].value * (grams/100)} )
-        macros.update( {"fats": self.nutrients["total lipid (fat)"].value * (grams/100)} )
-        macros.update( {"carbs": self.nutrients["carbohydrate, by difference"].value * (grams/100)} )
-        macros.update( {"kcals": self.nutrients["energy"].value * (grams/100)} )
+#        macros.update( {"protein": self.nutrients["protein"].value * (grams/100)} )
+#        macros.update( {"fats": self.nutrients["total lipid (fat)"].value * (grams/100)} )
+#        macros.update( {"carbs": self.nutrients["carbohydrate, by difference"].value * (grams/100)} )
+#        macros.update( {"kcals": self.nutrients["energy"].value * (grams/100)} )
+
+        for n in self.nutrients:
+            if n.name in self.MACROS:
+                macros.update( {n.name: n.value * (grams/100) } )
 
         return macros
 

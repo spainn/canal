@@ -5,8 +5,6 @@ from nutrient import Nutrient
 import pickle
 from datetime import datetime
 
-
-
 class Canal:
     API_KEY = "DEMO_KEY"
     TODAY_FILE = datetime.today().strftime('%Y-%m-%d') + ".txt"
@@ -18,10 +16,8 @@ class Canal:
 # [kcal], [fats], [carbs], [protein]
         with open (f"data/{self.TODAY_FILE}", "r") as handle:
             str_totals = handle.read().strip().split(", ")
-            print(str_totals)
 
         self.todays_macros = [float(i) for i in str_totals]
-        print(self.todays_macros)
 
 
     def add_macros(self, args):
