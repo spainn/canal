@@ -19,7 +19,6 @@ class Canal:
 
         self.todays_macros = [float(i) for i in str_totals]
 
-
     def add_macros(self, args):
         if args[2] == "-b":
             barcode = args[3]

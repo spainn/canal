@@ -4,12 +4,14 @@ from typing import List
 from nutrient import Nutrient
 
 class Meal:
+    MACROS = ["energy", "total lipid (fat)", "carbogydrate, by difference", "protein"]
+
     name: str
-    servings: float
+    servings: float                 # how many servings this meal is
     products: Dict[Product, float]  # Dict[Proudct, number of grams in the meal]
-    total_grams: float
-    serving_size: float
-    nutrients: List[Nutrient]
+    total_grams: float              # total grams in the entire meal
+    serving_size: float             # grams per serving (total_grams / servings)
+    #nutrients: List[Nutrient]
 
     def __init__(self, name, servings, products):    
         self.name = name
@@ -20,33 +22,25 @@ class Meal:
         self.total_grams = sum(self.products.values())
         self.serving_size = self.total_grams / self.servings
 
-        # calculate nutrients per 100g
-        nutrients = dict()
-        for product in products:
-            for nutrient in product.nutrients:
-                if nutrient.name in nutrients:
-                    nutrients[nutrient.name].value += nutrient.value
-                else:
-                    nutrients[nutrient.name] = nutrient
-
-        self.nutrients = list(nutrients.values())
-
-    @property
-    def nutrients_per_serving(self):
-        """Returns a Dict[str, Nutrient] of each nutrient's
-        name and value per serving rather than per 100g."""
-        
-        nutrients_per_serving = []
-        for n in self.nutrients:
-            new_nutrient = n
-            new_nutrient.value = new_nutrient.value*(self.serving_size/100)
-            nutrients_per_serving.append(new_nutrient)
-
-        return nutrients_per_serving
-
     def get_macros_from_grams(self, grams):
+        total_macros = { macro: 0.0 for macro in self.MACROS }
+
+        for product in self.products:
+            product_macros = product.get_macros_from_grams(self.products[product])
+            
+            for macro in product_macros:
+                total_macros[macro] += product_macros[macro]
+
+        macros = { key: value * (grams/self.total_grams) for key, value in total_macros.items()}
+
+        return macros
+
+
 
     def get_macros_from_servings(self, servings):
+        grams = servings*self.serving_size
+
+        return self.get_macros_from_grams(grams=grams)
 
     
         
