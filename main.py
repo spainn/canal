@@ -37,8 +37,11 @@ def main(args = [str]):
         canal.list_meals()
 
 # args[1] == meal
-    # meal create [name] [servings] [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]
-    # meal create [name] [servings] [serving_size] -m [kcal] [fat] [carbs] [protein]
+    # meal create [name] [servings] -b [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]
+    # meal create [name] [servings] -m [grams (weight total)] [kcal] [fat] [carbs] [protein] ... -m ...
+    # meal create [name] [servings] -meal [meal_name] [-s or -g or -t] [value]
+
+    # -t means TOTAL, or the entire meal
     #for i in args:
         #print(i)
     

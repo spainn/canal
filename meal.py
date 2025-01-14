@@ -4,7 +4,7 @@ from typing import List
 from nutrient import Nutrient
 
 class Meal:
-    MACROS = ["energy", "total lipid (fat)", "carbogydrate, by difference", "protein"]
+    MACROS = ["energy", "total lipid (fat)", "carbohydrate, by difference", "protein"]
 
     name: str
     servings: float                 # how many servings this meal is
@@ -15,7 +15,7 @@ class Meal:
 
     def __init__(self, name, servings, products):    
         self.name = name
-        self.servings = servings
+        self.servings = float(servings)
         self.products = products
         
         # calculate total grams and serving size
@@ -41,6 +41,9 @@ class Meal:
         grams = servings*self.serving_size
 
         return self.get_macros_from_grams(grams=grams)
+
+    def print_details(self):
+        """Prints verbose details of the meal."""
 
     
         

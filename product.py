@@ -11,13 +11,13 @@ from the USDA
 
 @dataclass(frozen=True)  #(order=True)
 class Product:
-    MACROS = ["energy", "total lipid (fat)", "carbogydrate, by difference", "protein"]
+    MACROS = ["energy", "total lipid (fat)", "carbohydrate, by difference", "protein"]
 
     brandName: str
     description: str
     serving_size: float             # g or mL amount
     servingSizeUnit: str           # g or mL
-    nutrients: List[Nutrient] # per 100g or 100mL
+    nutrients: tuple[Nutrient] # per 100g or 100mL
     
     @property
     def nutrients_per_serving(self):
