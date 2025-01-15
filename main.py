@@ -47,10 +47,10 @@ def main(args = [str]):
 
 
 # args[1] == meal
-    # meal create [name] [servings] -b [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]
+    # meal create [name] -b [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]
 
-    # meal create [name] [servings] -m [grams (weight total)] [kcal] [fat] [carbs] [protein] ... -m ...
-    # meal create [name] [servings] -meal [meal_to_add's name] [-s or -g or -t] [value]
+    # meal create [name] -m [grams (weight total)] [kcal] [fat] [carbs] [protein] ... -m ...
+    # meal create [name] -meal [meal_to_add's name] [-s or -g or -t] [value]
 
     # -t means TOTAL, or the entire meal
     #for i in args:

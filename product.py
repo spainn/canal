@@ -23,19 +23,19 @@ class Product:
         if isinstance(self.serving_size, str):
             object.__setattr__(self, 'serving_size', float(self.serving_size))
 
-    @property
-    def nutrients_per_serving(self):
-        """Returns a Dict[str, Nutrient] of each nutrient's
-        name and value per serving rather than per 100g."""
-        
-        nutrients_per_serving = []
-        for n in self.nutrients:
-            new_nutrient = Nutrient(name=n.name, 
-                                    unitName=n.unitName,
-                                    value=n.value*(self.serving_size/100))
-            nutrients_per_serving.append(new_nutrient)
-
-        return nutrients_per_serving
+#    @property
+#    def nutrients_per_serving(self):
+#        """Returns a Dict[str, Nutrient] of each nutrient's
+#        name and value per serving rather than per 100g."""
+#        
+#        nutrients_per_serving = []
+#        for n in self.nutrients:
+#            new_nutrient = Nutrient(name=n.name, 
+#                                    unitName=n.unitName,
+#                                    value=n.value*(self.serving_size/100))
+#        nutrients_per_serving.append(new_nutrient)
+#
+#        return nutrients_per_serving
 
     def get_macros_from_grams(self, grams):
         macros = dict()   

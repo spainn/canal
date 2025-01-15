@@ -34,10 +34,9 @@ class Canal:
                 print("todays_macros: " + str(self.todays_macros))
                 self._add_product_by_servings(product, float(servings))
 
-
-            elif args[4] == "-g":
-                grams = args[5]
-                self._add_product_by_grams(product, float(grams))
+            elif args[4] == "-u":
+                units = args[5] # will always be in grams or mLt
+                self._add_product_by_units(product, float(units))
 
         elif args[2] == "-m":
             # manually add a product as add -m kcal fats carbs protein to daily total
@@ -50,31 +49,18 @@ class Canal:
 
         else:
 
-            # parse adding meal by servings, or total meal
-            # however, if no flag, add whole meal
+            # if count provided add that many of the meal, else add the meal once 
             meal_name = args[2]
             try:
-                if args[3] == "-c":
-                    count = float(args[4])
-                    self._add_meal_by_servings(meal_name, count)
- 
-                elif args[3] == "-t":
-                    self._add_total_meal(meal_name)
+                    count = float(args[3])
+                    self._add_meal_by_count(meal_name, count) 
             except IndexError:
-                self._add_total_meal(meal_name)
-            # means args[2] is a name rather than a flag
+                self._add_meal_by_count(meal_name, count=1)            # means args[2] is a name rather than a flag
 
     def handle_meal_arguments(self, args):
         FLAGS = ["-b", "-m", "-meal"]
         if args[2] == "create":
-            name = args[3]
-            servings = args[4]
-
-            # if no specific amount of servings input, assume whole meal is 1 serving
-            if servings in FLAGS:
-                servings = 1
-            else:
-                servings = float(servings)
+            name = args[3] 
             
             flags = []  # list in format [flag, index, flag, index ...]
             for i in range(0, len(args)):
@@ -110,7 +96,7 @@ class Canal:
                             products.update( {product: value} )
 
                 elif flags[i] == "-m":
-                    total_grams = float(args[flag_index+1]) 
+                    total_units = float(args[flag_index+1]) 
                     
                     # list of values in the same order as self.MACROS
                     values=[args[flag_index+2], # energy
@@ -123,45 +109,37 @@ class Canal:
                     # name, unitName, value: str, str, float
                     # take value*(100/total_grams) to format the nutrient values
                     #   by nutrients / 100 grams
-                    nutrients = tuple(Nutrient(name, unit_name, value*(100/total_grams))
+                    nutrients = tuple(Nutrient(name, unit_name, value*(100/total_units))
                         for name, unit_name, value in zip(self.MACROS, self.UNITS, values))
                     
                     # create a filler product to hold the manually inputted macros
                     product = Product(brandName="",
                                       description="",
-                                      serving_size=total_grams/servings,
+                                      serving_size=0.0,
                                       servingSizeUnit="g",
                                       nutrients=nutrients)
                     
                     if product in products:
-                        products[product] += total_grams
+                        products[product] += total_units
                     else:
-                        products.update( {product: total_grams} )
+                        products.update( {product: total_units} )
 
                     print(products)
 
                 elif flags[i] == "-meal":
                     meal_to_add_name = args[flag_index+1]
-                    s_or_g = args[flag_index+2]
+                    count = float(args[flag_index+2])
                     
-                    meal = self.meals[meal_to_add_name]
-                    grams = 0.0
-                    if s_or_g == "-s":
-                        grams = float(args[flag_index+3])*meal.serving_size
-
-                    elif s_or_g == "-g":
-                        grams = float(args[flag_index+3])
-                    
-                    ratio = grams/meal.total_grams
+                    meal = self.meals[meal_to_add_name] 
 
                     for product in meal.products:
                         if product in products:
-                            products[product] += meal.products[product]*ratio
+                            products[product] += meal.products[product]*count
                         else:
-                            products.update( {product: meal.products[product]*ratio })
+                            products.update( {product: meal.products[product]*count })
 
 
-            meal = Meal(name=name, servings=servings, products=products)
+            meal = Meal(name=name, products=products)
             self.meals.update( {meal.name: meal} )
         
         # TESTED delete a meal
@@ -181,13 +159,6 @@ class Canal:
                     meal.print_details()
             except IndexError:
                 meal.print_details()
-
-
-
-
-            #if args[5] == "-m":
-                #self.meals.update( {name: } )
-
 
     def list_meals(self):
         for meal in self.meals:
@@ -210,38 +181,18 @@ class Canal:
         with open(self.TODAY_FILE, "w") as handle:
             handle.write(macro_data) 
 
-#    def _add_meal_by_grams(self, meal_name: str, grams: float):
-#        meal = self.meals[meal_name]
-#        macros = meal.get_macros_from_grams(grams=grams)
-#
-#        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros}
-
-    def _add_meal_by_servings(self, meal_name: str, servings: float):
+    def _add_meal_by_count(self, meal_name: str, count: float):
         meal = self.meals[meal_name]
-        macros = meal.get_macros_from_servings(servings=servings)
+        macros = meal.get_macros_from_count(count=count)
 
         self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.items()}
 
-    def _add_total_meal(self, meal_name: str):
-        meal = self.meals[meal_name]
-
-        self.todays_macros = {key: meal.total_macros[key] + self.todays_macros[key] for key in meal.total_macros.items()} 
-
-    def _add_product_by_grams(self, product: Product, grams: float):
+    def _add_product_by_units(self, product: Product, grams: float):
         macros = product.get_macros_from_grams(grams=grams)
-
-        print("macros: " + str(macros))
-
         self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros}
 
-        print("todays_macros: " + str(self.todays_macros))
-        # read file with macro/kcal data.
-        # date, name (if meal mealname, else null), kcal, fats, carbs, protein
-
     def _add_product_by_servings(self, product: Product, servings: float):
-        self._add_product_by_grams(product, servings*product.serving_size)
-
-        print("_add_product_by_servings: " + str(servings*product.serving_size))
+        self._add_product_by_units(product, servings*product.serving_size) 
 
     def _get_product(self, barcode):
         url = f"https://api.nal.usda.gov/fdc/v1/foods/search?query={barcode}&pageSize=10&api_key={self.API_KEY}"
