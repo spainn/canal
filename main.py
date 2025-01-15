@@ -26,6 +26,15 @@ def main(args = [str]):
         # print daily macronutrients and calories
         return 
     
+    command = args[1]
+    #action = args[2]
+    
+
+
+    # MAKE A PARSER CLASS that returns the variables you need to pass to a function in Canal.
+    # canal is the tracker that handles tracking stuff
+    #
+    # parser handles reading arguments in order to get the variables.
     # add a new 
     if args[1] == "add":
        canal.add_macros(args=args) 
@@ -36,10 +45,12 @@ def main(args = [str]):
     elif args[1] == "list":
         canal.list_meals()
 
+
 # args[1] == meal
     # meal create [name] [servings] -b [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]
+
     # meal create [name] [servings] -m [grams (weight total)] [kcal] [fat] [carbs] [protein] ... -m ...
-    # meal create [name] [servings] -meal [meal_name] [-s or -g or -t] [value]
+    # meal create [name] [servings] -meal [meal_to_add's name] [-s or -g or -t] [value]
 
     # -t means TOTAL, or the entire meal
     #for i in args:

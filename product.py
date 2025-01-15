@@ -17,8 +17,12 @@ class Product:
     description: str
     serving_size: float             # g or mL amount
     servingSizeUnit: str           # g or mL
-    nutrients: tuple[Nutrient] # per 100g or 100mL
+    nutrients: tuple[Nutrient, ...] # per 100g or 100mL
     
+    def __post_init__(self):
+        if isinstance(self.serving_size, str):
+            object.__setattr__(self, 'serving_size', float(self.serving_size))
+
     @property
     def nutrients_per_serving(self):
         """Returns a Dict[str, Nutrient] of each nutrient's
@@ -26,19 +30,15 @@ class Product:
         
         nutrients_per_serving = []
         for n in self.nutrients:
-            new_nutrient = n
-            new_nutrient.value = new_nutrient.value*(self.serving_size/100)
+            new_nutrient = Nutrient(name=n.name, 
+                                    unitName=n.unitName,
+                                    value=n.value*(self.serving_size/100))
             nutrients_per_serving.append(new_nutrient)
 
         return nutrients_per_serving
 
     def get_macros_from_grams(self, grams):
-        macros = dict()
-        
-#        macros.update( {"protein": self.nutrients["protein"].value * (grams/100)} )
-#        macros.update( {"fats": self.nutrients["total lipid (fat)"].value * (grams/100)} )
-#        macros.update( {"carbs": self.nutrients["carbohydrate, by difference"].value * (grams/100)} )
-#        macros.update( {"kcals": self.nutrients["energy"].value * (grams/100)} )
+        macros = dict()   
 
         for n in self.nutrients:
             if n.name in self.MACROS:
