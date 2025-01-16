@@ -37,12 +37,12 @@ class Product:
 #
 #        return nutrients_per_serving
 
-    def get_macros_from_grams(self, grams):
+    def get_macros_from_units(self, units):
         macros = dict()   
 
         for n in self.nutrients:
             if n.name in self.MACROS:
-                macros.update( {n.name: n.value * (grams/100) } )
+                macros.update( {n.name: n.value * (units/100) } )
 
         return macros
 

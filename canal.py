@@ -1,5 +1,4 @@
 import requests
-import pprint
 from meal import Meal
 from product import Product
 from nutrient import Nutrient
@@ -12,7 +11,7 @@ class Canal:
     UNITS = ["kcal", "g", "g", "g"]
     API_KEY = "DEMO_KEY"
     TODAY_FILE = "data/" + datetime.today().strftime('%Y-%m-%d') + ".txt"
-    ROUND_PRECISION = 2
+    ROUND_PRECISION = 1
     
     def __init__(self):
         # load meals in form dict{name: Meal}
@@ -185,10 +184,10 @@ class Canal:
         meal = self.meals[meal_name]
         macros = meal.get_macros_from_count(count=count)
 
-        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.items()}
+        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.keys()}
 
-    def _add_product_by_units(self, product: Product, grams: float):
-        macros = product.get_macros_from_grams(grams=grams)
+    def _add_product_by_units(self, product: Product, units: float):
+        macros = product.get_macros_from_units(units=units)
         self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros}
 
     def _add_product_by_servings(self, product: Product, servings: float):
