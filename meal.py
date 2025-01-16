@@ -8,25 +8,22 @@ class Meal:
     MACROS = ["energy", "total lipid (fat)", "carbohydrate, by difference", "protein"]
 
     name: str
-    #servings: float                 # how many servings this meal is
     products: Dict[Product, float]  # Dict[Proudct, number of grams in the meal]
     total_grams: float = 0.0            # total grams in the entire meal
     total_ml: float = 0.0           # total mLt in entire meal
-    #serving_size: float             # grams per serving (total_grams / servings)
-    #nutrients: List[Nutrient]
-
+    
     def __init__(self, name, products):    
         self.name = name 
         self.products = products
         
-        # calculate total grams and serving size
+        # calculate total grams and milliliters
         for product in self.products:
             if product.servingSizeUnit == "g":
                 self.total_grams += self.products[product]
             elif product.servingSizeUnit == "mlt":
                 self.total_ml += self.products[product]
-
-    #def get_macros_from_grams(self, grams):
+    
+    # total macros the meal contains in dictionary format {energy: kcal, macro: grams}
     @property
     def total_macros(self):
         total_macros = { macro: 0.0 for macro in self.MACROS }
@@ -36,8 +33,6 @@ class Meal:
             
             for macro in product_macros:
                 total_macros[macro] += product_macros[macro]
-
-        #macros = { key: value * (grams/self.total_grams) for key, value in total_macros.items()}
 
         return total_macros
 
@@ -52,13 +47,4 @@ class Meal:
         print("\tTotal mLt: " + str(self.total_ml))
         if show_products:
             print("\tProducts: ", end=""); pprint.pprint(str(self.products))
-    
-        
 
-
-# 'protein'
-# 'total lipid (fat)'
-# 'carbohydrate, by difference'
-# 'energy'
-
-# 'fiber, total dietary'
