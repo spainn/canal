@@ -22,39 +22,22 @@ class Canal:
             str_totals = handle.read().strip().split(", ")
 
         self.todays_macros = dict(zip(self.MACROS, [float(i) for i in str_totals]))
+    
+    def add_macros_by_barcode(self, barcode, is_servings, count):
+        product = self._get_product(barcode)
+        if is_servings:
+            self._add_product_by_units(product, count*product.serving_size)
 
-    def add_macros(self, args):
-        if args[2] == "-b":
-            barcode = args[3]
-            product = self._get_product(barcode)
-
-            if args[4] == "-s":
-                servings = args[5]
-                print("todays_macros: " + str(self.todays_macros))
-                self._add_product_by_servings(product, float(servings))
-
-            elif args[4] == "-u":
-                units = args[5] # will always be in grams or mLt
-                self._add_product_by_units(product, float(units))
-
-        elif args[2] == "-m":
-            # manually add a product as add -m kcal fats carbs protein to daily total
-            macros = [float(args[3]), float(args[4]), float(args[5]), float(args[6])]
-
+    def add_macros(self, macros: list[float]):
             i = 0
             for key in self.todays_macros:
                 self.todays_macros[key] += macros[i]
-                i += 1
 
-        else:
+    def add_macros_by_meal(self, meal_name, count):
+        meal = self.meals[meal_name]
+        macros = meal.get_macros_from_count(count=count)
 
-            # if count provided add that many of the meal, else add the meal once 
-            meal_name = args[2]
-            try:
-                    count = float(args[3])
-                    self._add_meal_by_count(meal_name, count) 
-            except IndexError:
-                self._add_meal_by_count(meal_name, count=1)            # means args[2] is a name rather than a flag
+        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.keys()}        
 
     def handle_meal_arguments(self, args):
         FLAGS = ["-b", "-m", "-meal"]
@@ -145,20 +128,6 @@ class Canal:
         elif args[2] == "rm":
             del self.meals[args[3]]
         
-        # TESTED print important information about a meal given it's name
-        else:
-            name = args[2]
-            meal = self.meals[name]
-            
-            # parse flag -p or --products to print out data of the products that comprise the meal
-            try:
-                if args[3] == "-p" or args[3] == "--products":
-                    meal.print_details(show_products=bool(args[3]))
-                else:
-                    meal.print_details()
-            except IndexError:
-                meal.print_details()
-
     def list_meals(self):
         for meal in self.meals:
             print(meal)
@@ -180,18 +149,18 @@ class Canal:
         with open(self.TODAY_FILE, "w") as handle:
             handle.write(macro_data) 
 
-    def _add_meal_by_count(self, meal_name: str, count: float):
-        meal = self.meals[meal_name]
-        macros = meal.get_macros_from_count(count=count)
-
-        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.keys()}
+#    def _add_meal_by_count(self, meal_name: str, count: float):
+#        meal = self.meals[meal_name]
+#        macros = meal.get_macros_from_count(count=count)
+#
+#        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.keys()}
 
     def _add_product_by_units(self, product: Product, units: float):
         macros = product.get_macros_from_units(units=units)
         self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros}
 
-    def _add_product_by_servings(self, product: Product, servings: float):
-        self._add_product_by_units(product, servings*product.serving_size) 
+    #def _add_product_by_servings(self, product: Product, servings: float):
+    #    self._add_product_by_units(product, servings*product.serving_size) 
 
     def _get_product(self, barcode):
         url = f"https://api.nal.usda.gov/fdc/v1/foods/search?query={barcode}&pageSize=10&api_key={self.API_KEY}"

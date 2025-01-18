@@ -1,6 +1,6 @@
 import sys
 from canal import Canal
-
+from parser import Parser
 API_KEY = "DEMO_KEY"
 BARCODE = "021130409433"
 
@@ -11,34 +11,49 @@ TODO
  and it subtracts it (just use the add functions but negative somehow?)
 -decouple parsing and Canal.  Create Parser class.  Do functionality like creating a meal in main.py
 -make sure a daily file exists on program start in main.py or in Canal init
+-make canal add [mealname] [-s or -g] [value] work ONLY IN THE CASE THAT the meal has
+ one product only
 """
          
-def main(args = [str]):
-    args = sys.argv
+def main(): 
     canal = Canal()
-
-    if len(args) == 0:
-        # print daily macronutrients and calories
-        return 
-    
-    command = args[1]
-    #action = args[2]
+    parser = Parser(sys.argv)
 
     # MAKE A PARSER CLASS that returns the variables you need to pass to a function in Canal.
     # canal is the tracker that handles tracking stuff
     #
     # parser handles reading arguments in order to get the variables.
     # add a new 
-    if command == "add":
-       canal.add_macros(args=args)
-        #       canal.add_macros(parser.parse_add(args))
-    
-    elif command == "meal":
-       canal.handle_meal_arguments(args=args) 
-    # list the name of all stored meals and their macronutrients / kcals
-    elif command == "list":
-        canal.list_meals()
+    if parser.command == "add":
+            if parser.action == "-b":
+                canal.add_macros_by_barcode(
+                    *parser.parse_add_barcode()
+            )
 
+            elif parser.action == "-m":
+                canal.add_macros(
+                   parser.parse_add_manual()
+            )
+
+            else:
+                canal.add_macros_by_meal(
+                    parser.parse_add_meal()
+            )
+    
+    elif parser.command == "meal":
+        if parser.action == "create":
+            parser.parse_meal_create()
+        elif parser.action == "rm":
+            parser.parse_meal_remove()
+
+        #canal.handle_meal_arguments(args=args) 
+
+    # list the name of all stored meals and their macronutrients / kcals
+    elif parser.command == "list":
+        parser.parse_list()
+            #meal = canal.meals[action]
+            #meal.print_details()
+            #canal.list_meals()
 
 # command == meal
     # meal create [name] -b [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]

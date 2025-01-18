@@ -33,7 +33,7 @@ class Product:
         return macros
 
     def get_macros_from_servings(self, servings):
-        grams = servings*self.serving_size
+        units = servings*self.serving_size
 
-        return self.get_macros_from_grams(grams=grams)
+        return self.get_macros_from_units(units=units)
 

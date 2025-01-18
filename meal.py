@@ -29,7 +29,7 @@ class Meal:
         total_macros = { macro: 0.0 for macro in self.MACROS }
 
         for product in self.products:
-            product_macros = product.get_macros_from_grams(self.products[product])
+            product_macros = product.get_macros_from_units(self.products[product])
             
             for macro in product_macros:
                 total_macros[macro] += product_macros[macro]
