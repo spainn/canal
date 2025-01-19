@@ -11,6 +11,7 @@ class Meal:
     products: Dict[Product, float]  # Dict[Proudct, number of grams in the meal]
     total_grams: float = 0.0            # total grams in the entire meal
     total_ml: float = 0.0           # total mLt in entire meal
+    one_product: bool = False
     
     def __init__(self, name, products):    
         self.name = name 
@@ -22,6 +23,9 @@ class Meal:
                 self.total_grams += self.products[product]
             elif product.servingSizeUnit == "mlt":
                 self.total_ml += self.products[product]
+
+        if len(self.products) == 1:
+            self.one_product = True
     
     # total macros the meal contains in dictionary format {energy: kcal, macro: grams}
     @property

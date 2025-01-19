@@ -4,27 +4,31 @@ from parser import Parser
 API_KEY = "DEMO_KEY"
 BARCODE = "021130409433"
 
+# milk barcode
+# 078742351896
 """
 TODO
--add command to view daily macros
--add canal sub functionality where you can also specify meal name, barcode, or manual
- and it subtracts it (just use the add functions but negative somehow?)
--decouple parsing and Canal.  Create Parser class.  Do functionality like creating a meal in main.py
--make sure a daily file exists on program start in main.py or in Canal init
--make canal add [mealname] [-s or -g] [value] work ONLY IN THE CASE THAT the meal has
+-make canal add [mealname] [-s or -u] [value] work ONLY IN THE CASE THAT the meal has
  one product only
- -COULD change -m flag to -p to represent product instead of manual, which would essentially
-  be manually inputting a product, but then use -m to mean meal for creating a meal
  -refactor product.py to use snake case isntead of camel case across the whole codebase
 """
 
 """
-canal meal create [name] -m [product_name] [total_units] [kcal] [fats] [carbs] [proteins]
+canal meal create [name] -p [product_name] [total_units] [kcal] [fats] [carbs] [proteins]
+canal meal create [name] -b [barcode] [-s or -u] [count]
+canal meal create [name] -m [meal_name] [count]
+
+canal add [kcal] [fat] [carbs] [protein]
+canal add -m [meal_name] [count]
+canal add -m [meal_name] [-s or -u] [count]
+canal add -b [barcode] [-s or -u] [count]
+
+canal list
+
 """
 
 """
 NEEDS TESTED
--add
 -meal create
     in particular when -meal egg 2 and -meal egg 3 are used or something similar
     where the overlap addition is tested
@@ -33,6 +37,7 @@ NEEDS TESTED
 TESTED
 -add -m
 -add MANUAL INPUT (4 floats)
+-add -b
 """
          
 def main(): 
@@ -51,9 +56,14 @@ def main():
             )
 
             elif parser.action == "-m":
-                canal.add_macros_by_meal(
-                    *parser.parse_add_meal()
-            )
+                # is_servings is None if no -s or -u flags were passed
+
+                meal_name, count, is_servings = parser.parse_add_meal()
+                if is_servings == None:
+                    canal.add_macros_by_meal(meal_name, count)
+                else:
+                    canal.add_macros_product_meal(meal_name, count, is_servings)
+            
 
             else:
                 canal.add_macros(

@@ -47,6 +47,20 @@ class Canal:
       
         self.add_macros(macros)
 
+    def add_macros_product_meal(self, meal_name, count, is_servings):
+        meal = self.meals[meal_name]
+        if meal.one_product == False:
+            raise Exception(f"The meal '{meal}' consists of more than 1 Product, so it can not " +
+                             "be added with '-s' or '-u' flags.")
+
+        product = next(iter(meal.products.keys())) 
+        if is_servings:
+            macros = product.get_macros_from_units(units=count*product.serving_size)
+        else:
+            macros = product.get_macros_from_units(units=count)
+
+        self.add_macros(macros)
+
     def create_meal(self, meal_name, barcodes, manuals, meals):
         products = dict()
         
@@ -64,18 +78,20 @@ class Canal:
             # total_grams, kcal, fats, carbs, proteins
             product_name, total_units, kcal, fats, carbs, proteins = m[0], m[1], m[2], m[3], m[4], m[5]
             
-            nutrients = (Nutrient(self.MACROS[0], "kcal", kcal),
-                         Nutrient(self.MACROS[1], "g", fats),
-                         Nutrient(self.MACROS[2], "g", carbs),
-                         Nutrient(self.MACROS[3], "g", proteins))
+            # ratio for calculating correct nutrients / 100 units as the nutrients list requires
+            ratio = 100/total_units
+            nutrients = (Nutrient(self.MACROS[0], "kcal", kcal*ratio),
+                         Nutrient(self.MACROS[1], "g", fats*ratio),
+                         Nutrient(self.MACROS[2], "g", carbs*ratio),
+                         Nutrient(self.MACROS[3], "g", proteins*ratio))
 
             p = Product(product_name, "", total_units, "unknown", nutrients)
 
             products[p] = products.get(p, 0.0) + total_units
 
-        for meal in meals:
-            meal = self.meals[meal[0]]
-            count = meal[1]
+        for m in meals:
+            meal = self.meals[m[0]]
+            count = m[1]
 
             for p in meal.products:
                 products[p] = products.get(p, 0.0) + meal.products[p]*count

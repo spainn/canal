@@ -29,13 +29,16 @@ class Parser():
         barcode = self.args[barcode_index]
         is_servings = True 
         
-        unit_flag = self.args[barcode_index]
+        unit_flag = self.args[barcode_index+1]
+        print(unit_flag)
+        print(unit_flag)
+        print(unit_flag)
         if unit_flag == "-s":
-           pass
+           is_servings = True
         elif unit_flag == "-u":
             is_servings = False
         else:
-            raise Exception(f"{self.args[4]}: is not understood as indicating servings or units.")
+            raise Exception(f"{unit_flag}: is not understood as indicating servings or units.")
         
         count = float(self.args[5])
 
@@ -49,18 +52,29 @@ class Parser():
 
         return dict(zip(self.MACROS, values))
 
-    def parse_add_meal(self):
-        #meal_name = self.action
+    def parse_add_meal(self): 
         meal_name = self.args[3]
 
+        # check if -s or -u were passed.  If so return whether we want to calculate using
+        # servings or units.  Return None if neither of those flags were passed, and assume
+        # a count representing the amount of the meal that needs tracked was passed instead.
         try:
-            count = float(self.args[4])
-            return meal_name, count
+            if self.args[4] == "-s":
+                count = float(self.args[5])
+                is_servings = True
+                return meal_name, count, is_servings
+            elif self.args[4] == "-u":
+                count = float(self.args[5])
+                is_servings = False
+                return meal_name, count, is_servings 
+            else:
+                count = float(self.args[4])
+                return meal_name, count, None
         except IndexError:
-            return meal_name, int(1)
+            return meal_name, int(1), None
 
     def parse_meal_create(self):
-        FLAGS = ["-b", "-p", "-meal"]
+        FLAGS = ["-b", "-p", "-m"]
         name = self.args[3]
 
         barcodes = []
@@ -74,26 +88,21 @@ class Parser():
                 # append the flag and the index after it
                 flags.append((self.args[i], i+1))
                 
-
         for flag, index_after in flags:
             if flag == "-b":
                 barcodes.append(self.parse_add_barcode(barcode_index=index_after))
 
             if flag == "-p":
-                #manual = [self.args[index_after],
-                                #self.args[index_after+1],
-                                #self.args[index_after+2],
-                                #self.args[index_after+3],
-                                #self.args[index_after+4]]
+                manuals.append(self._parse_create_meal_manual(index_after_flag=index_after))
 
-                #manual = [float(i) for i in manual]
-                manuals.append(self._parse_create_meal_manual(index_after_flag=index_after+1))
-
-            elif flag == "-meal":
+            elif flag == "-m":
                 meals.append([self.args[index_after], float(self.args[index_after+1])])
 
-
         return name, barcodes, manuals, meals
+
+    def parse_meal_remove(self):
+        # return the name of the meal to remove
+        return self.args[3]
 
     def _parse_create_meal_manual(self, index_after_flag):
         return [str(self.args[index_after_flag]),
@@ -102,10 +111,4 @@ class Parser():
                 float(self.args[index_after_flag+3]),
                 float(self.args[index_after_flag+4]),
                 float(self.args[index_after_flag+5])]
-#                float(self.args[index_after_flag+4])]
-                #float(self.args[index_after_flag+5])]
-
-    def parse_meal_remove(self):
-        # return the name of the meal to remove
-        return self.args[3]
 
