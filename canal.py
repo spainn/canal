@@ -12,6 +12,7 @@ class Canal:
     UNITS = ["kcal", "g", "g", "g"]
     API_KEY = "DEMO_KEY"
     TODAY_FILE = "data/" + datetime.today().strftime('%Y-%m-%d') + ".txt"
+    PICKLE_FILE = "data/" + "meals.pickle"
     ROUND_PRECISION = 1
     
     def __init__(self):
@@ -19,9 +20,16 @@ class Canal:
         if not os.path.exists(self.TODAY_FILE):
             with open(self.TODAY_FILE, "w") as handle:
                 handle.write("0.0, 0.0, 0.0, 0.0")
+
+        # create meals file if it doesn't exst
+        if not os.path.exists(self.PICKLE_FILE):
+            with open(self.PICKLE_FILE, "wb") as handle:
+                pickle.dump(dict(), handle, protocol=pickle.HIGHEST_PROTOCOL)
+
         # load meals in form dict{name: Meal}
-        with open ('meals.pickle', 'rb') as handle:
+        with open (self.PICKLE_FILE, 'rb') as handle:
             self.meals = pickle.load(handle)
+
         # [kcal], [fats], [carbs], [protein]
         with open (self.TODAY_FILE, "r") as handle:
             str_totals = handle.read().strip().split(", ")
@@ -53,7 +61,7 @@ class Canal:
             raise Exception(f"The meal '{meal}' consists of more than 1 Product, so it can not " +
                              "be added with '-s' or '-u' flags.")
 
-        product = next(iter(meal.products.keys())) 
+        product = next(iter(meal.products.keys()))
         if is_servings:
             macros = product.get_macros_from_units(units=count*product.serving_size)
         else:
@@ -123,7 +131,7 @@ class Canal:
         print("-"*33)
 
     def save_state(self):
-        with open("meals.pickle", "wb") as handle:
+        with open(self.PICKLE_FILE, "wb") as handle:
             pickle.dump(self.meals, handle, protocol=pickle.HIGHEST_PROTOCOL)
        
         # round to 2 decimal places before write
