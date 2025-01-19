@@ -19,15 +19,9 @@ class Parser():
             except IndexError:
                 self.action = ""
         except IndexError:
-            self.command = ""
-       
-        if self.command == "add":
-            self._parse_add_command(args[2:]) 
-        elif self.command == "meal":
-            self._parse_meal_command(args[2:])
-        elif self.command == "list":
-            self._parse_list_command(args)
-        
+            self.command = "" 
+    
+    # rename barcode_index to index_after_barcode
     def parse_add_barcode(self, barcode_index=3):
         # action = -b
         barcode = self.args[barcode_index]
@@ -45,8 +39,13 @@ class Parser():
 
         return barcode, is_servings, count 
 
-    def parse_add_manual(self):
-        return [float(self.args[3]), float(self.args[4]), float(self.args[5]), float(self.args[6])]
+    def parse_add_manual(self, index_after_flag=3):
+        return [str(self.args[index_after_flag]),
+                float(self.args[index_after_flag+1]),
+                float(self.args[index_after_flag+2]),
+                float(self.args[index_after_flag+3]),
+                float(self.args[index_after_flag+4]),
+                float(self.args[index_after_flag+5])]
 
     def parse_add_meal(self):
         meal_name = self.action
@@ -71,27 +70,29 @@ class Parser():
             if self.args[i] in FLAGS:
                 # append the flag and the index after it
                 flags.append((self.args[i], i+1))
-                flags.append(i+1)
+                
 
         for flag, index_after in flags:
             if flag == "-b":
                 barcodes.append(self.parse_add_barcode(barcode_index=index_after))
 
             if flag == "-m":
-                manual = [self.args[index_after],
-                                self.args[index_after+1],
-                                self.args[index_after+2],
-                                self.args[index_after+3],
-                                self.args[index_after+4]]
+                #manual = [self.args[index_after],
+                                #self.args[index_after+1],
+                                #self.args[index_after+2],
+                                #self.args[index_after+3],
+                                #self.args[index_after+4]]
 
-                manual = [float(i) for i in manual]
-                manuals.append(manual)
+                #manual = [float(i) for i in manual]
+                manuals.append(self.parse_add_manual(index_after_flag=index_after))
 
             elif flag == "-meal":
                 meals.append([self.args[index_after], float(self.args[index_after+1])])
 
-    def parse_meal_remove(self):
-        None
 
-    def parse_list(self):
-        None
+        return name, barcodes, manuals, meals
+
+    def parse_meal_remove(self):
+        # return the name of the meal to remove
+        return self.args[3]
+

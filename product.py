@@ -16,6 +16,7 @@ class Product:
     brandName: str
     description: str
     serving_size: float             # g or mLt amount
+    # with the way it's set up might be able to remove servingSizeUnit
     servingSizeUnit: str            # g or mLt
     nutrients: tuple[Nutrient, ...] # per 100g or 100mLt
     
@@ -32,8 +33,8 @@ class Product:
 
         return macros
 
-    def get_macros_from_servings(self, servings):
-        units = servings*self.serving_size
-
-        return self.get_macros_from_units(units=units)
+#    def get_macros_from_servings(self, servings):
+#        units = servings*self.serving_size
+#
+#        return self.get_macros_from_units(units=units)
 

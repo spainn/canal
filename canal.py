@@ -5,6 +5,7 @@ from nutrient import Nutrient
 from typing import Dict
 import pickle
 from datetime import datetime
+import os
 
 class Canal:
     MACROS = ["energy", "total lipid (fat)", "carbohydrate, by difference", "protein"]
@@ -14,6 +15,10 @@ class Canal:
     ROUND_PRECISION = 1
     
     def __init__(self):
+        # create daily file if it doesn't exist
+        if not os.path.exists(self.TODAY_FILE):
+            with open(self.TODAY_FILE, "w") as handle:
+                handle.write("0.0, 0.0, 0.0, 0.0")
         # load meals in form dict{name: Meal}
         with open ('meals.pickle', 'rb') as handle:
             self.meals = pickle.load(handle)
@@ -39,98 +44,64 @@ class Canal:
 
         self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.keys()}        
 
-    def handle_meal_arguments(self, args):
-        FLAGS = ["-b", "-m", "-meal"]
-        if args[2] == "create":
-            name = args[3] 
-            
-            flags = []  # list in format [flag, index, flag, index ...]
-            for i in range(0, len(args)):
-                if args[i] == "-b" or args[i] == "-m" or args[i] == "-meal":
-                    flags.append(args[i])
-                    flags.append(i)
-
-            print("FLAGS: " + str(flags))
-           
-            products: Dict[Product, float] = dict()
-            for i in range(0, len(flags), 2):
-                flag_index = flags[i+1]
-
-                if flags[i] == "-b":
-                    barcode = args[flag_index+1]
-                    s_or_g = args[flag_index+2]
-                    value = float(args[flag_index+3])
-
-                    #print("BAR, S_OR_G, VALUE: " + str(barcode) + str(s_or_g) + str(value) + str(type(value)))
-                    
-                    product = self._get_product(barcode=barcode)
-
-                    if s_or_g == "-s":
-                        if product in products:
-                            products[product] += value*product.serving_size
-                        else:
-                            products.update( {product: value*product.serving_size} )
-
-                    elif s_or_g == "-g":
-                        if product in products:
-                            products[product] += value
-                        else:
-                            products.update( {product: value} )
-
-                elif flags[i] == "-m":
-                    total_units = float(args[flag_index+1]) 
-                    
-                    # list of values in the same order as self.MACROS
-                    values=[args[flag_index+2], # energy
-                            args[flag_index+3], # fat
-                            args[flag_index+4], # carbs
-                            args[flag_index+5]] # protein
-
-                    values = [float(value) for value in values]
-
-                    # name, unitName, value: str, str, float
-                    # take value*(100/total_grams) to format the nutrient values
-                    #   by nutrients / 100 grams
-                    nutrients = tuple(Nutrient(name, unit_name, value*(100/total_units))
-                        for name, unit_name, value in zip(self.MACROS, self.UNITS, values))
-                    
-                    # create a filler product to hold the manually inputted macros
-                    product = Product(brandName="",
-                                      description="",
-                                      serving_size=0.0,
-                                      servingSizeUnit="g",
-                                      nutrients=nutrients)
-                    
-                    if product in products:
-                        products[product] += total_units
-                    else:
-                        products.update( {product: total_units} )
-
-                    print(products)
-
-                elif flags[i] == "-meal":
-                    meal_to_add_name = args[flag_index+1]
-                    count = float(args[flag_index+2])
-                    
-                    meal = self.meals[meal_to_add_name] 
-
-                    for product in meal.products:
-                        if product in products:
-                            products[product] += meal.products[product]*count
-                        else:
-                            products.update( {product: meal.products[product]*count })
-
-
-            meal = Meal(name=name, products=products)
-            self.meals.update( {meal.name: meal} )
+    def create_meal(self, meal_name, barcodes, manuals, meals):
+        products = dict()
         
-        # TESTED delete a meal
-        elif args[2] == "rm":
-            del self.meals[args[3]]
+        # generate list of products
+        for b in barcodes:
+            p = self._get_product(b[0])
+            is_servings = b[1]
+            count = b[2] if not is_servings else b[2]*p.serving_size 
+
+            # NEED TO CHECK IF THE PRODUCT IS ALREADY IN THE THING 
+#            products.update({p: count})
+            products[p] = products.get(p, 0.0) + count
+
+        for m in manuals:
+            # total_grams, kcal, fats, carbs, proteins
+            product_name, total_units, kcal, fats, carbs, proteins = m[0], m[1], m[2], m[3], m[4], m[5]
+            
+            nutrients = (Nutrient(self.MACROS[0], "kcal", kcal),
+                         Nutrient(self.MACROS[1], "g", fats),
+                         Nutrient(self.MACROS[2], "g", carbs),
+                         Nutrient(self.MACROS[3], "g", proteins))
+
+            p = Product(product_name, "", total_units, "unknown", nutrients)
+
+            products[p] = products.get(p, 0.0) + total_units
+
+        for meal in meals:
+            meal = self.meals[meal[0]]
+            count = meal[1]
+
+            for p in meal.products:
+                products[p] = products.get(p, 0.0) + meal.products[p]*count
+
+        # create meal from dictionary of products
+        meal = Meal(meal_name, products)
+        self.meals.update( {meal_name: meal} )
+
+    def remove_meal(self, meal_name):
+            del self.meals[meal_name]
         
     def list_meals(self):
         for meal in self.meals:
             print(meal)
+
+    def display_meal(self, meal_name: str):
+        self.meals[meal_name].print_details()
+
+    def display_todays_macros(self):
+        display_strings = ["calories", "fats", "carbs", "protein"]
+        macros = zip(display_strings, self.todays_macros.values(), self.UNITS)
+        print()
+        print(f"{'Macro':<14} | {'Amount':>10}")
+        print("-"*33)
+        #print("|" + " "*42 + "|")
+        for key, value, unit in macros:
+            print(f" {key:<13} | {value:>10.2f}" + " " + unit)
+        #print("|" + " "*42 + "|")
+        print("-"*33)
 
     def save_state(self):
         with open("meals.pickle", "wb") as handle:
@@ -149,18 +120,9 @@ class Canal:
         with open(self.TODAY_FILE, "w") as handle:
             handle.write(macro_data) 
 
-#    def _add_meal_by_count(self, meal_name: str, count: float):
-#        meal = self.meals[meal_name]
-#        macros = meal.get_macros_from_count(count=count)
-#
-#        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.keys()}
-
     def _add_product_by_units(self, product: Product, units: float):
         macros = product.get_macros_from_units(units=units)
         self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros}
-
-    #def _add_product_by_servings(self, product: Product, servings: float):
-    #    self._add_product_by_units(product, servings*product.serving_size) 
 
     def _get_product(self, barcode):
         url = f"https://api.nal.usda.gov/fdc/v1/foods/search?query={barcode}&pageSize=10&api_key={self.API_KEY}"

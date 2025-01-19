@@ -13,6 +13,8 @@ TODO
 -make sure a daily file exists on program start in main.py or in Canal init
 -make canal add [mealname] [-s or -g] [value] work ONLY IN THE CASE THAT the meal has
  one product only
+ -COULD change -m flag to -p to represent product instead of manual, which would essentially
+  be manually inputting a product, but then use -m to mean meal for creating a meal
 """
          
 def main(): 
@@ -37,23 +39,30 @@ def main():
 
             else:
                 canal.add_macros_by_meal(
-                    parser.parse_add_meal()
+                    *parser.parse_add_meal()
             )
     
     elif parser.command == "meal":
         if parser.action == "create":
-            parser.parse_meal_create()
+            canal.create_meal(
+                *parser.parse_meal_create()
+            )
         elif parser.action == "rm":
-            parser.parse_meal_remove()
+            canal.remove_meal(
+                parser.parse_meal_remove()
+            )
+
+        else:
+            canal.display_meal(parser.action)
 
         #canal.handle_meal_arguments(args=args) 
 
     # list the name of all stored meals and their macronutrients / kcals
     elif parser.command == "list":
-        parser.parse_list()
-            #meal = canal.meals[action]
-            #meal.print_details()
+        canal.list_meals()
             #canal.list_meals()
+    elif parser.command == "":
+        canal.display_todays_macros()
 
 # command == meal
     # meal create [name] -b [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]
