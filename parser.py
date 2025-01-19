@@ -30,9 +30,6 @@ class Parser():
         is_servings = True 
         
         unit_flag = self.args[barcode_index+1]
-        print(unit_flag)
-        print(unit_flag)
-        print(unit_flag)
         if unit_flag == "-s":
            is_servings = True
         elif unit_flag == "-u":
@@ -40,8 +37,7 @@ class Parser():
         else:
             raise Exception(f"{unit_flag}: is not understood as indicating servings or units.")
         
-        count = float(self.args[5])
-
+        count = float(self.args[barcode_index+2])
         return barcode, is_servings, count 
 
     def parse_add_manual(self, index_after_flag=2):
