@@ -1,6 +1,8 @@
 # parses given arguments
 
 class Parser():
+    MACROS = ["energy", "total lipid (fat)", "carbohydrate, by difference", "protein"]
+
     args: list[str]
     command: str
     action: str
@@ -39,19 +41,20 @@ class Parser():
 
         return barcode, is_servings, count 
 
-    def parse_add_manual(self, index_after_flag=3):
-        return [float(self.args[index_after_flag]),
+    def parse_add_manual(self, index_after_flag=2):
+        values = [float(self.args[index_after_flag]),
                 float(self.args[index_after_flag+1]),
                 float(self.args[index_after_flag+2]),
                 float(self.args[index_after_flag+3])]
-#                float(self.args[index_after_flag+4])]
-                #float(self.args[index_after_flag+5])]
+
+        return dict(zip(self.MACROS, values))
 
     def parse_add_meal(self):
-        meal_name = self.action
+        #meal_name = self.action
+        meal_name = self.args[3]
 
         try:
-            count = float(self.args[3])
+            count = float(self.args[4])
             return meal_name, count
         except IndexError:
             return meal_name, int(1)

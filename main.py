@@ -28,6 +28,10 @@ NEEDS TESTED
     in particular when -meal egg 2 and -meal egg 3 are used or something similar
     where the overlap addition is tested
 -
+
+TESTED
+-add -m
+-add MANUAL INPUT (4 floats)
 """
          
 def main(): 

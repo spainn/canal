@@ -22,7 +22,7 @@ class Canal:
         # load meals in form dict{name: Meal}
         with open ('meals.pickle', 'rb') as handle:
             self.meals = pickle.load(handle)
-# [kcal], [fats], [carbs], [protein]
+        # [kcal], [fats], [carbs], [protein]
         with open (self.TODAY_FILE, "r") as handle:
             str_totals = handle.read().strip().split(", ")
 
