@@ -15,6 +15,7 @@ TODO
  one product only
  -COULD change -m flag to -p to represent product instead of manual, which would essentially
   be manually inputting a product, but then use -m to mean meal for creating a meal
+ -refactor product.py to use snake case isntead of camel case across the whole codebase
 """
 
 """
@@ -80,6 +81,9 @@ def main():
             #canal.list_meals()
     elif parser.command == "":
         canal.display_todays_macros()
+
+    else:
+        canal.display_meal(parser.command)
 
 # command == meal
     # meal create [name] -b [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]

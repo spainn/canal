@@ -40,11 +40,26 @@ class Meal:
     def get_macros_from_count(self, count: float):
         return { key: value*count for key, value in self.total_macros.items() }
 
-    def print_details(self, show_products = False):
-        """Prints verbose details of the meal."""
-        print(self.name + ": " + str(self.total_macros)) 
-        print("\tTotal Grams: " + str(self.total_grams))
-        print("\tTotal mLt: " + str(self.total_ml))
-        if show_products:
-            print("\tProducts: ", end=""); pprint.pprint(str(self.products))
+    def print_details(self):
+        """Prints verbose details of a meal."""
+        print("\nName: " + self.name)
+        print("Total Grams: " + str(self.total_grams))
+        print("Total Milliliters: " + str(self.total_ml))
+        print("PRODUCTS:")
+        for p in self.products:
+            print("\tBrand Name: " + p.brandName)
+            print("\tDescription: " + p.description)
+
+            macros = p.get_macros_from_units(self.products[p])
+            
+            print("\t\tMACRONUTRIENTS")
+            for m in macros:
+                print("\t\t\t" + m + ": " + str(macros[m]))
+
+            print("\t\tALL NUTRIENTS")
+            for n in p.nutrients:
+                print("\t\t\t" + str(n.name) + ": " + str(n.value*self.products[p]/100))
+
+            print()
+
 
