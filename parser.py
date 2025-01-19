@@ -40,12 +40,12 @@ class Parser():
         return barcode, is_servings, count 
 
     def parse_add_manual(self, index_after_flag=3):
-        return [str(self.args[index_after_flag]),
+        return [float(self.args[index_after_flag]),
                 float(self.args[index_after_flag+1]),
                 float(self.args[index_after_flag+2]),
-                float(self.args[index_after_flag+3]),
-                float(self.args[index_after_flag+4]),
-                float(self.args[index_after_flag+5])]
+                float(self.args[index_after_flag+3])]
+#                float(self.args[index_after_flag+4])]
+                #float(self.args[index_after_flag+5])]
 
     def parse_add_meal(self):
         meal_name = self.action
@@ -57,7 +57,7 @@ class Parser():
             return meal_name, int(1)
 
     def parse_meal_create(self):
-        FLAGS = ["-b", "-m", "-meal"]
+        FLAGS = ["-b", "-p", "-meal"]
         name = self.args[3]
 
         barcodes = []
@@ -76,7 +76,7 @@ class Parser():
             if flag == "-b":
                 barcodes.append(self.parse_add_barcode(barcode_index=index_after))
 
-            if flag == "-m":
+            if flag == "-p":
                 #manual = [self.args[index_after],
                                 #self.args[index_after+1],
                                 #self.args[index_after+2],
@@ -84,13 +84,23 @@ class Parser():
                                 #self.args[index_after+4]]
 
                 #manual = [float(i) for i in manual]
-                manuals.append(self.parse_add_manual(index_after_flag=index_after))
+                manuals.append(self._parse_create_meal_manual(index_after_flag=index_after+1))
 
             elif flag == "-meal":
                 meals.append([self.args[index_after], float(self.args[index_after+1])])
 
 
         return name, barcodes, manuals, meals
+
+    def _parse_create_meal_manual(self, index_after_flag):
+        return [str(self.args[index_after_flag]),
+                float(self.args[index_after_flag+1]),
+                float(self.args[index_after_flag+2]),
+                float(self.args[index_after_flag+3]),
+                float(self.args[index_after_flag+4]),
+                float(self.args[index_after_flag+5])]
+#                float(self.args[index_after_flag+4])]
+                #float(self.args[index_after_flag+5])]
 
     def parse_meal_remove(self):
         # return the name of the meal to remove

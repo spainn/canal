@@ -28,21 +28,24 @@ class Canal:
 
         self.todays_macros = dict(zip(self.MACROS, [float(i) for i in str_totals]))
     
+    def add_macros(self, macros: Dict[str, float]):
+        for key, value in macros.items():
+            self.todays_macros[key] += value
+
     def add_macros_by_barcode(self, barcode, is_servings, count):
         product = self._get_product(barcode)
         if is_servings:
-            self._add_product_by_units(product, count*product.serving_size)
+            macros = product.get_macros_from_units(units=count*product.serving_size)
+        else:
+            macros = product.get_macros_from_units(units=count)
 
-    def add_macros(self, macros: list[float]):
-            i = 0
-            for key in self.todays_macros:
-                self.todays_macros[key] += macros[i]
+        self.add_macros(macros)
 
     def add_macros_by_meal(self, meal_name, count):
         meal = self.meals[meal_name]
         macros = meal.get_macros_from_count(count=count)
-
-        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros.keys()}        
+      
+        self.add_macros(macros)
 
     def create_meal(self, meal_name, barcodes, manuals, meals):
         products = dict()
@@ -119,10 +122,6 @@ class Canal:
         
         with open(self.TODAY_FILE, "w") as handle:
             handle.write(macro_data) 
-
-    def _add_product_by_units(self, product: Product, units: float):
-        macros = product.get_macros_from_units(units=units)
-        self.todays_macros = {key: macros[key] + self.todays_macros[key] for key in macros}
 
     def _get_product(self, barcode):
         url = f"https://api.nal.usda.gov/fdc/v1/foods/search?query={barcode}&pageSize=10&api_key={self.API_KEY}"

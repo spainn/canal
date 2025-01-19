@@ -16,6 +16,19 @@ TODO
  -COULD change -m flag to -p to represent product instead of manual, which would essentially
   be manually inputting a product, but then use -m to mean meal for creating a meal
 """
+
+"""
+canal meal create [name] -m [product_name] [total_units] [kcal] [fats] [carbs] [proteins]
+"""
+
+"""
+NEEDS TESTED
+-add
+-meal create
+    in particular when -meal egg 2 and -meal egg 3 are used or something similar
+    where the overlap addition is tested
+-
+"""
          
 def main(): 
     canal = Canal()
@@ -33,13 +46,13 @@ def main():
             )
 
             elif parser.action == "-m":
-                canal.add_macros(
-                   parser.parse_add_manual()
+                canal.add_macros_by_meal(
+                    *parser.parse_add_meal()
             )
 
             else:
-                canal.add_macros_by_meal(
-                    *parser.parse_add_meal()
+                canal.add_macros(
+                   parser.parse_add_manual()
             )
     
     elif parser.command == "meal":
