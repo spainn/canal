@@ -78,8 +78,6 @@ class Canal:
             is_servings = b[1]
             count = b[2] if not is_servings else b[2]*p.serving_size 
 
-            # NEED TO CHECK IF THE PRODUCT IS ALREADY IN THE THING 
-#            products.update({p: count})
             products[p] = products.get(p, 0.0) + count
 
         for m in manuals:
@@ -124,10 +122,8 @@ class Canal:
         print()
         print(f"{'Macro':<14} | {'Amount':>10}")
         print("-"*33)
-        #print("|" + " "*42 + "|")
         for key, value, unit in macros:
             print(f" {key:<13} | {value:>10.2f}" + " " + unit)
-        #print("|" + " "*42 + "|")
         print("-"*33)
 
     def save_state(self):
@@ -154,7 +150,6 @@ class Canal:
         r = requests.get(url)
         if r.status_code == 200:
             raw_product_data = r.json()
-         #   pprint.pprint(raw_product_data)
         else:
             raise Exception(f"request failed with status code {r.status_code}")
 
