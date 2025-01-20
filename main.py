@@ -2,14 +2,10 @@ import sys
 from canal import Canal
 from parser import Parser
 
-API_KEY = "DEMO_KEY"
-BARCODE = "021130409433"
-
-# milk barcode
-# 078742351896
 """
 TODO
  -refactor product.py to use snake case isntead of camel case across the whole codebase
+ -add a command to set the round precision when writing the macros
 """
 
 """
@@ -25,20 +21,7 @@ canal add -b [barcode] [-s or -u] [count]
 canal list
 
 """
-
-"""
-NEEDS TESTED
--meal create
-    in particular when -meal egg 2 and -meal egg 3 are used or something similar
-    where the overlap addition is tested
--
-
-TESTED
--add -m
--add MANUAL INPUT (4 floats)
--add -b
-"""
-         
+        
 def main(): 
     canal = Canal()
     parser = Parser(sys.argv)

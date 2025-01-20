@@ -13,7 +13,7 @@ class Canal:
     API_KEY = "DEMO_KEY"
     TODAY_FILE = "data/" + datetime.today().strftime('%Y-%m-%d') + ".txt"
     PICKLE_FILE = "data/" + "meals.pickle"
-    ROUND_PRECISION = 1
+    ROUND_PRECISION = 2
     
     def __init__(self):
         # create daily file if it doesn't exist
