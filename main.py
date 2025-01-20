@@ -1,6 +1,7 @@
 import sys
 from canal import Canal
 from parser import Parser
+
 API_KEY = "DEMO_KEY"
 BARCODE = "021130409433"
 
@@ -8,8 +9,6 @@ BARCODE = "021130409433"
 # 078742351896
 """
 TODO
--make canal add [mealname] [-s or -u] [value] work ONLY IN THE CASE THAT the meal has
- one product only
  -refactor product.py to use snake case isntead of camel case across the whole codebase
 """
 
@@ -44,11 +43,6 @@ def main():
     canal = Canal()
     parser = Parser(sys.argv)
 
-    # MAKE A PARSER CLASS that returns the variables you need to pass to a function in Canal.
-    # canal is the tracker that handles tracking stuff
-    #
-    # parser handles reading arguments in order to get the variables.
-    # add a new 
     if parser.command == "add":
             if parser.action == "-b":
                 canal.add_macros_by_barcode(
@@ -56,7 +50,6 @@ def main():
             )
 
             elif parser.action == "-m":
-                # is_servings is None if no -s or -u flags were passed
 
                 meal_name, count, is_servings = parser.parse_add_meal()
                 if is_servings == None:
@@ -83,27 +76,17 @@ def main():
         else:
             canal.display_meal(parser.action)
 
-        #canal.handle_meal_arguments(args=args) 
-
     # list the name of all stored meals and their macronutrients / kcals
     elif parser.command == "list":
         canal.list_meals()
-            #canal.list_meals()
+
     elif parser.command == "":
         canal.display_todays_macros()
 
     else:
         canal.display_meal(parser.command)
-
-# command == meal
-    # meal create [name] -b [barcode] [-s or -g] [value] ... [barcode] [-s or -g] [value]
     
-    # NEED TOTAL GRAMS IN EXAMPLE BELOW so that we can calculate a total macros of a meal
-    #     based on how much of that product is in the meal (the total grams)
-    # meal create [name] -m [grams in meal (weight total)] [kcal] [fat] [carbs] [protein] ... -m ...
-    # meal create [name] -meal [meal_to_add's name] [count]
-    
-    # save the meal dictionary and daily macro totals
+    # save the macros and meals after the command has been processed
     canal.save_state()
 
 if __name__ == "__main__":
