@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict
 from nutrient import Nutrient
-from typing import List
 
 """
 raw data retrived for nutrients is first based as per
@@ -16,7 +14,6 @@ class Product:
     brandName: str
     description: str
     serving_size: float             # g or mLt amount
-    # with the way it's set up might be able to remove servingSizeUnit
     servingSizeUnit: str            # g or mLt
     nutrients: tuple[Nutrient, ...] # per 100g or 100mLt
     
@@ -32,9 +29,4 @@ class Product:
                 macros.update( {n.name: n.value * (units/100) } )
 
         return macros
-
-#    def get_macros_from_servings(self, servings):
-#        units = servings*self.serving_size
-#
-#        return self.get_macros_from_units(units=units)
 
