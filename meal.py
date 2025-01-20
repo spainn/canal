@@ -1,8 +1,5 @@
 from product import Product
 from typing import Dict
-from typing import List
-from nutrient import Nutrient
-import pprint
 
 class Meal:
     MACROS = ["energy", "total lipid (fat)", "carbohydrate, by difference", "protein"]

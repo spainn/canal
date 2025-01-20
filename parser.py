@@ -1,5 +1,3 @@
-# parses given arguments
-
 class Parser():
     MACROS = ["energy", "total lipid (fat)", "carbohydrate, by difference", "protein"]
 
@@ -25,7 +23,6 @@ class Parser():
     
     # rename barcode_index to index_after_barcode
     def parse_add_barcode(self, barcode_index=3):
-        # action = -b
         barcode = self.args[barcode_index]
         is_servings = True 
         
