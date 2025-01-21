@@ -165,7 +165,7 @@ class Canal:
                          unitName = nutrient['unitName'].lower(),
                          value = nutrient['value']) 
             nutrients.append(n)
-        product = Product(brandName=food['brandName'].lower(),
+        product = Product(brand_name=food['brandName'].lower(),
                           description=food['description'],
                           serving_size=food['servingSize'],
                           servingSizeUnit=food['servingSizeUnit'].lower(),

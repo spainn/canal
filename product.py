@@ -11,7 +11,7 @@ from the USDA
 class Product:
     MACROS = ["energy", "total lipid (fat)", "carbohydrate, by difference", "protein"]
 
-    brandName: str
+    brand_name: str
     description: str
     serving_size: float             # g or mLt amount
     servingSizeUnit: str            # g or mLt

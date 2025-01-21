@@ -48,7 +48,7 @@ class Meal:
         print("Total Milliliters: " + str(self.total_ml))
         print("PRODUCTS:")
         for p in self.products:
-            print("\tBrand Name: " + p.brandName)
+            print("\tBrand Name: " + p.brand_name)
             print("\tDescription: " + p.description)
 
             macros = p.get_macros_from_units(self.products[p])
