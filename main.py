@@ -3,23 +3,18 @@ from canal import Canal
 from parser import Parser
 
 """
-TODO
- -refactor product.py to use snake case isntead of camel case across the whole codebase
- -add a command to set the round precision when writing the macros
-"""
+COMMANDS
 
-"""
 canal meal create [name] -p [product_name] [total_units] [kcal] [fats] [carbs] [proteins]
 canal meal create [name] -b [barcode] [-s or -u] [count]
 canal meal create [name] -m [meal_name] [count]
 
 canal add [kcal] [fat] [carbs] [protein]
 canal add -m [meal_name] [count]
-canal add -m [meal_name] [-s or -u] [count]
+canal add -m [meal_name] [-s or -u] [count]         IF only 1 product in the meal
 canal add -b [barcode] [-s or -u] [count]
 
 canal list
-
 """
         
 def main(): 

@@ -16,9 +16,9 @@ class Meal:
         
         # calculate total grams and milliliters
         for product in self.products:
-            if product.servingSizeUnit == "g":
+            if product.serving_size_unit == "g":
                 self.total_grams += self.products[product]
-            elif product.servingSizeUnit == "mlt":
+            elif product.serving_size_unit == "mlt":
                 self.total_ml += self.products[product]
 
         if len(self.products) == 1:

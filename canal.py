@@ -168,7 +168,7 @@ class Canal:
         product = Product(brand_name=food['brandName'].lower(),
                           description=food['description'],
                           serving_size=food['servingSize'],
-                          servingSizeUnit=food['servingSizeUnit'].lower(),
+                          serving_size_unit=food['servingSizeUnit'].lower(),
                           nutrients=tuple(nutrients))
 
         return product

@@ -14,7 +14,7 @@ class Product:
     brand_name: str
     description: str
     serving_size: float             # g or mLt amount
-    servingSizeUnit: str            # g or mLt
+    serving_size_unit: str            # g or mLt
     nutrients: tuple[Nutrient, ...] # per 100g or 100mLt
     
     def __post_init__(self):
