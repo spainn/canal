@@ -16,6 +16,9 @@ class Canal:
     ROUND_PRECISION = 2
     
     def __init__(self):
+        # create data directory if it doesn't exist
+        os.makedirs(os.path.dirname(self.TODAY_FILE), exist_ok=True)
+
         # create daily file if it doesn't exist
         if not os.path.exists(self.TODAY_FILE):
             with open(self.TODAY_FILE, "w") as handle:
